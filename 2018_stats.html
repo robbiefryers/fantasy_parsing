@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>LWSP - The Stats</title>
+	<meta charset="utf-8">
+	<meta author="Robbie Fryers">
+	<meta name="viewport" content="width=device-width, initial-scale=1">	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" href="fantasyStyle.css">
+</head>
+
+<body>
+
+	<!-- I SEEN YOU, YOU DIRTY WEE BIN HOKER -->
+
+	<div class="container">
+		<h1>Lads Who Drink Pints 2018/19</h1>
+
+		<div class="graphContainer">
+			<h2> Total Points vs Gameweek</h2>
+			<canvas id="cumPointsChart"></canvas>
+		</div>
+
+		<div class="pieWrapper">
+			<div class="pieContainerLeft">
+				<h2>Average Winning Margin</h2>
+				<canvas id="graphTwoCanvas"></canvas>
+			</div>
+
+			<div class="pieContainerRight">
+				<h2>Average Losing Margin</h2>
+				<canvas id="graphThreeCanvas"></canvas>
+			</div>
+		</div>
+
+
+
+		<div class="graphContainer">
+			<h2>Frequency of positions picked</h2>
+			<canvas id="graphFourCanvas"></canvas>
+		</div>
+
+		<div class="graphContainer">
+			<h2>Percentage of points from position</h2>
+			<canvas id="graphFiveCanvas"></canvas>
+		</div>
+
+		<div class="graphContainer">
+			<h2>Points left on bench</h2>
+			<canvas id="graphSixCanvas"></canvas>
+		</div>
+
+		<div class="graphContainer">
+			Choose a player:
+			<select id="playerSelected" onchange="updateIndivGraph()">
+				<option disabled selected="">Pick someone</option>
+				<option value="Ruairi">Ruairi</option>
+				<option value="Gavin">Gavin</option>
+				<option value="Cillian">Cillian</option>
+				<option value="Sean">Sean</option>
+				<option value="Robbie">Robbie</option>
+				<option value="Peter">Peter</option>
+				<option value="Eoghan">Eoghan</option>
+				<option value="Fearghal">Fearghal</option>
+				<option value="Conall">Conall</option>
+			</select>
+			<h2>You vs. the heap</h2>
+			<canvas id="graphSevenCanvas"></canvas>
+		</div>
+
+	</div>
+
+
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+	
+
+	<script type="text/javascript">
+
+	var graphSeven;
+	var headToHeadMatrix;
+
+	function updateIndivGraph() {
+		//Reset the player Names each time this is called to the full set
+		playerNames = ['Ruairi', 'Gavin', 'Cillian', 'Sean', 'Robbie', 'Peter', 'Eoghan', 'Fearghal', 'Conall'];
+		
+		//Figure out which option was selec
+		name = document.getElementById("playerSelected").value;
+		var index = playerNames.indexOf(name);
+		console.log(index);
+		graphSeven.options.title.text = playerNames[index] + " vs the heap";
+		
+		
+		var wins = [];
+		var draws = [];
+		var losses = [];
+		
+		for (var i = 0; i < 9; i++) {
+			wins.push(headToHeadMatrix[index][i][0]);
+			draws.push(headToHeadMatrix[index][i][1]);
+			losses.push(headToHeadMatrix[index][i][2]);
+		}
+
+		graphSeven.data.labels = playerNames;
+
+		
+		graphSeven.data.datasets[0].data = wins;
+		graphSeven.data.datasets[1].data = draws;
+		graphSeven.data.datasets[2].data = losses;
+
+		graphSeven.update();
+		
+	}
+
+
+
+	window.onload = function() {
+
+		var weeks = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17];
+		var playerNames = ['Ruairi', 'Gavin', 'Cillian', 'Sean', 'Robbie', 'Peter', 'Eoghan', 'Fearghal', 'Conall'];
+		var colours = ["#a5d6a7","#ce93d8","#64b5f6","#8d6e63","#80cbc4","#ffca28","#607d8b","#9fa8da","#ef5350"];
+;		var gameweekPointsMatrix =
+		[ [ 3, 6, 6, 9, 9, 12, 15, 18, 18, 18, 21, 22, 22, 22, 22, 22, 22 ],
+		  [ 0, 0, 3, 3, 6, 6, 6, 9, 12, 12, 15, 18, 21, 24, 24, 27, 30 ],
+		  [ 3, 3, 6, 6, 9, 9, 9, 12, 12, 15, 15, 18, 18, 18, 21, 21, 21 ],
+		  [ 0, 0, 0, 3, 3, 3, 3, 3, 6, 6, 7, 7, 10, 13, 16, 19, 22 ],
+		  [ 3, 6, 9, 12, 12, 15, 15, 18, 21, 24, 24, 27, 30, 33, 36, 39, 42 ],
+		  [ 3, 6, 6, 6, 9, 9, 9, 9, 12, 15, 18, 21, 21, 21, 24, 24, 27 ],
+		  [ 0, 3, 6, 6, 6, 9, 12, 12, 12, 15, 15, 15, 15, 15, 18, 21, 21 ],
+		  [ 3, 6, 9, 12, 15, 15, 18, 19, 19, 19, 22, 22, 25, 28, 28, 28, 31 ],
+		  [ 0, 0, 0, 0, 0, 3, 6, 7, 7, 7, 8, 8, 8, 11, 11, 11, 11 ] 
+		];
+
+		var graphOneContainer = document.getElementById("cumPointsChart");
+
+		var graphOne = new Chart(graphOneContainer, {
+		    type: 'line',
+		    data: {
+		        labels: weeks,
+		        datasets: [	        			        	
+							{
+		            label: 'Ruairi',
+		            data: gameweekPointsMatrix[0],
+		            fill: false,
+		            borderColor: colours[0],
+		            backgroundColor: colours[0],
+		            borderWidth: 2
+			        },
+							{
+		            label: 'Gavin',
+		            data: gameweekPointsMatrix[1],
+		            fill: false,
+		            borderColor: colours[1],
+		            backgroundColor: colours[1],
+		            borderWidth: 2
+			        },
+							{
+		            label: 'Cillian',
+		            data: gameweekPointsMatrix[2],
+		            fill: false,
+		            borderColor: colours[2],
+		            backgroundColor: colours[2],
+		            borderWidth: 2
+			        },
+							{
+		            label: 'Sean',
+		            data: gameweekPointsMatrix[3],
+		            fill: false,
+		            borderColor: colours[3],
+		            backgroundColor: colours[3],
+		            borderWidth: 2
+			        },
+							{
+		            label: 'Robbie',
+		            data: gameweekPointsMatrix[4],
+		            fill: false,
+		            borderColor: colours[4],
+		            backgroundColor: colours[4],
+		            borderWidth: 2
+			        },
+							{
+		            label: 'Peter',
+		            data: gameweekPointsMatrix[5],
+		            fill: false,
+		            borderColor: colours[5],
+		            backgroundColor: colours[5],
+		            borderWidth: 2
+			        },
+							{
+		            label: 'Eoghan',
+		            data: gameweekPointsMatrix[6],
+		            fill: false,
+		            borderColor: colours[6],
+		            backgroundColor: colours[6],
+		            borderWidth: 2
+			        },
+					{
+		            label: 'Fearghal',
+		            data: gameweekPointsMatrix[7],
+		            fill: false,
+		            borderColor: colours[7],
+		            backgroundColor: colours[7],
+		            borderWidth: 2
+			        },
+			        {
+		            label: 'Conal',
+		            data: gameweekPointsMatrix[8],
+		            fill: false,
+		            borderColor: colours[8],
+		            backgroundColor: colours[8],
+		            borderWidth: 2
+			        }				        
+		        ]
+		    },
+		    options: {
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+											labelString: "Total Points"
+		                }
+		            }],
+		            xAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+											labelString: "Gameweek #"
+		                }
+		            }]
+		        }
+		    }
+		});
+
+
+
+		var averageWinMargin = [ 
+			16.571428571428573,
+			13.2,
+  			13.142857142857142,
+			8,
+			10.642857142857142,
+			6.555555555555555,
+			9.428571428571429,
+			6.4,
+			8 
+		];
+
+
+
+		var graphTwoContainer = document.getElementById("graphTwoCanvas");
+
+		var graphTwo = new Chart(graphTwoContainer, {
+		    type: 'bar',
+		    data: {
+		        labels: playerNames,
+		        datasets: [{
+		        	data: averageWinMargin,
+		        	backgroundColor: colours,
+		        }]
+		        
+		    },
+		    options: {
+
+		    	 legend: {
+        			display: false
+    			},
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+							labelString: "Winning margin"
+		                }
+		            }],
+		            xAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:false,
+		                }
+		            }]
+		        },
+		        title: {
+            	display: false,
+        		}
+		    }
+		});
+
+
+
+
+
+
+		var averageLoseMargin = [
+			12.444444444444445,
+			8.714285714285714,
+			8.8,
+			6.888888888888889,
+			7.333333333333333,
+			7.75,
+			12.3,
+			12.666666666666666,
+			13.333333333333334 
+  		];
+
+		var graphThreeContainer = document.getElementById("graphThreeCanvas");
+
+		var graphThree = new Chart(graphThreeContainer, {
+		    type: 'bar',
+		    data: {
+		        labels: playerNames,
+		        datasets: [{
+		        	data: averageLoseMargin,
+		        	backgroundColor: colours,
+		        }]
+		        
+		    },
+		    options: {
+
+		    	 legend: {
+        			display: false
+    			},
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+							labelString: "Losing margin"
+		                }
+		            }],
+		            xAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:false,
+		                }
+		            }]
+		        },
+		        title: {
+            	display: false,
+        		}
+		    }
+		});
+
+
+
+
+		var positionCounts = [
+			[61,66,61,61,54,63,63,63,77],
+			[70,64,71,63,71,74,67,61,57],
+			[39,40,38,46,45,33,40,46,36]
+		];
+
+
+		var graphFourContainer = document.getElementById("graphFourCanvas");
+
+
+		var graphFour = new Chart(graphFourContainer, {
+		    type: 'bar',
+		    data: {
+		        labels: playerNames,
+		        datasets: [
+			        {
+			        	data: positionCounts[0],
+			            backgroundColor: "rgba(255, 202, 71, 0.7)",
+			            borderColor: "rgba(255, 202, 71, 0.7)",
+			        	label: 'Defenders',
+			        },
+			        {
+			        	data: positionCounts[1],
+			            
+			            backgroundColor: "rgba(36, 188, 169, 0.7)",
+			            borderColor: "rgba(36, 188, 169, 0.7)",
+			        	label: 'Midfielders'
+			        },
+			        {
+			        	data: positionCounts[2],
+			            backgroundColor: "rgba(240, 91, 49, 0.7)",
+			            borderColor: "rgba(240, 91, 49, 0.7)",
+			        	label: 'Strikers'
+			        },			        			       
+		        ]
+		        
+		    },
+		    options: {
+
+		    	 legend: {
+        			display: true
+    			},
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+							labelString: "Positions picked"
+		                }
+		            }],
+		            xAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:false,
+		                }
+		            }]
+		        },
+		        title: {
+            	display: false,
+        		}
+		    }
+		});
+
+
+
+		var positionPercentages = [
+			[ 0.315,0.435,0.280,0.329,0.324,0.352,0.381,0.358,0.379 ],
+  			[ 0.491,0.320,0.485,0.400,0.412,0.482,0.453,0.337,0.326 ],
+  			[ 0.192,0.244,0.233,0.270,0.263,0.165,0.164,0.303,0.293]
+  		]
+
+
+		var graphFiveContainer = document.getElementById("graphFiveCanvas");
+
+
+		var graphFive = new Chart(graphFiveContainer, {
+		    type: 'bar',
+		    data: {
+		        labels: playerNames,
+		        datasets: [
+			        {
+			        	data: positionPercentages[0],
+			            backgroundColor: "rgba(255, 202, 71, 0.7)",
+			            borderColor: "rgba(255, 202, 71, 0.7)",
+			        	label: 'Defenders',
+			        },
+			        {
+			        	data: positionPercentages[1],
+			            
+			            backgroundColor: "rgba(36, 188, 169, 0.7)",
+			            borderColor: "rgba(36, 188, 169, 0.7)",
+			        	label: 'Midfielders'
+			        },
+			        {
+			        	data: positionPercentages[2],
+			            backgroundColor: "rgba(240, 91, 49, 0.7)",
+			            borderColor: "rgba(240, 91, 49, 0.7)",
+			        	label: 'Strikers'
+			        },			        			       
+		        ]
+		        
+		    },
+		    options: {
+
+		    	 legend: {
+        			display: true
+    			},
+		        scales: {
+		            yAxes: [{
+		            	stacked: true,
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+							labelString: "Percentage of points earned by position"
+		                }
+		            }],
+		            xAxes: [{
+		            	stacked: true,
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:false,
+		                }
+		            }]
+		        },
+		        title: {
+            	display: false,
+        		}
+		    }
+		});
+
+
+
+		var subsPoints = [ 132, 56, 112, 67, 82, 191, 138, 34, 76 ];
+
+
+		var graphSixContainer = document.getElementById("graphSixCanvas");
+
+		var graphSix = new Chart(graphSixContainer, {
+		    type: 'polarArea',
+		    data: {
+		        labels: playerNames,
+		        datasets: [{
+		        	data: subsPoints,
+		        	backgroundColor: colours,
+		        }]
+		        
+		    },
+		    options: {
+
+		    	 legend: {
+        			display: true
+    			},
+		        title: {
+            	display: false,
+        		}
+		    }
+		});
+
+		headToHeadMatrix =
+
+		[ 
+			[ [ 0, 0, 0 ],[ 0, 0, 2 ],[ 1, 0, 1 ],[ 1, 0, 1 ],[ 0, 0, 2 ],[ 1, 0, 1 ],[ 2, 0, 0 ],[ 0, 0, 2 ],[ 1, 0, 0 ] ],
+  			[ [ 2, 0, 0 ],[ 0, 0, 0 ],[ 2, 0, 0 ],[ 1, 0, 0 ],[ 1, 0, 1 ],[ 0, 0, 2 ],[ 1, 0, 1 ],[ 1, 0, 1 ],[ 2, 0, 0 ] ],
+  			[ [ 1, 0, 1 ],[ 0, 0, 2 ],[ 0, 0, 0 ],[ 1, 0, 1 ],[ 0, 0, 1 ],[ 1, 0, 1 ],[ 2, 0, 0 ],[ 0, 0, 2 ],[ 2, 0, 0 ] ],
+  			[ [ 1, 0, 1 ],[ 0, 0, 1 ],[ 1, 0, 1 ],[ 0, 0, 0 ],[ 0, 0, 2 ],[ 0, 0, 2 ],[ 1, 0, 1 ],[ 2, 0, 0 ],[ 1, 1, 0 ] ],
+  			[ [ 2, 0, 0 ],[ 1, 0, 1 ],[ 1, 0, 0 ],[ 2, 0, 0 ],[ 0, 0, 0 ],[ 1, 0, 1 ],[ 2, 0, 0 ],[ 2, 0, 0 ],[ 1, 0, 1 ] ],
+  			[ [ 1, 0, 1 ],[ 2, 0, 0 ],[ 1, 0, 1 ],[ 2, 0, 0 ],[ 1, 0, 1 ],[ 0, 0, 0 ],[ 1, 0, 1 ],[ 0, 0, 1 ],[ 0, 0, 2 ] ],
+  			[ [ 0, 0, 2 ],[ 1, 0, 1 ],[ 0, 0, 2 ],[ 1, 0, 1 ],[ 0, 0, 2 ],[ 1, 0, 1 ],[ 0, 0, 0 ],[ 1, 0, 1 ],[ 2, 0, 0 ] ],
+  			[ [ 2, 0, 0 ],[ 1, 0, 1 ],[ 2, 0, 0 ],[ 0, 0, 2 ],[ 0, 0, 2 ],[ 1, 0, 0 ],[ 1, 0, 1 ],[ 0, 0, 0 ],[ 1, 1, 0 ] ],
+  			[ [ 0, 0, 1 ],[ 0, 0, 2 ],[ 0, 0, 2 ],[ 0, 1, 1 ],[ 1, 0, 1 ],[ 2, 0, 0 ],[ 0, 0, 2 ],[ 0, 1, 1 ],[ 0, 0, 0 ] ] 
+
+  		];
+
+
+		var graphSevenContainer = document.getElementById("graphSevenCanvas");
+
+		graphSeven = new Chart(graphSevenContainer, {
+		    type: 'bar',
+		    data: {
+		        labels: playerNames,
+		        datasets: [{
+		            label: 'Win',
+		            data: [],
+		            backgroundColor: "rgba(54, 162, 235, 0.5)",
+		            borderColor: "rgba(54, 162, 235, 1)",
+		            borderWidth: 1
+		        },
+				{
+		            label: 'Draw',
+		            data: [],
+		            backgroundColor: "rgba(75, 192, 192, 0.5)",
+		            borderColor: "rgba(75, 192, 192, 1)",
+		            borderWidth: 1
+		        },
+				{
+		            label: 'Lose',
+		            data: [],
+		            backgroundColor: "rgba(255, 99, 132, 0.5)",
+		            borderColor: "rgba(255,99,132,1)",
+		            borderWidth: 1
+		        }
+		        ]
+		    },
+		    options: {
+		        scales: {
+		            yAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+							labelString: "Points"
+		                }
+		            }],
+		            xAxes: [{
+		                ticks: {
+		                    beginAtZero:true
+		                },
+		                scaleLabel: {
+		                	display:true,
+							labelString: "Opposition"
+		                }
+		            }]
+		        },
+		        title: {
+            		display: true,
+            		text: "Pick a player"
+        		}
+		    }
+		});
+
+
+	}
+
+
+
+
+	</script>
+
+
+
+
+	<script
+			  src="https://code.jquery.com/jquery-3.3.1.min.js"
+			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			  crossorigin="anonymous">
+	</script>
+
+
+</body>
+
+
+
+</html>

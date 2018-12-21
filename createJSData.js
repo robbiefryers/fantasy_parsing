@@ -1,5 +1,6 @@
-[
+var data = [
   {
+    "averagePts": 41.0, 
     "gameweek": 1, 
     "matches": [
       {
@@ -231,6 +232,7 @@
     ]
   }, 
   {
+    "averagePts": 39.0, 
     "gameweek": 2, 
     "matches": [
       {
@@ -462,6 +464,7 @@
     ]
   }, 
   {
+    "averagePts": 37.0, 
     "gameweek": 3, 
     "matches": [
       {
@@ -693,6 +696,7 @@
     ]
   }, 
   {
+    "averagePts": 35.0, 
     "gameweek": 4, 
     "matches": [
       {
@@ -924,6 +928,7 @@
     ]
   }, 
   {
+    "averagePts": 40.0, 
     "gameweek": 5, 
     "matches": [
       {
@@ -1155,6 +1160,7 @@
     ]
   }, 
   {
+    "averagePts": 41.0, 
     "gameweek": 6, 
     "matches": [
       {
@@ -1386,6 +1392,7 @@
     ]
   }, 
   {
+    "averagePts": 37.0, 
     "gameweek": 7, 
     "matches": [
       {
@@ -1617,6 +1624,7 @@
     ]
   }, 
   {
+    "averagePts": 42.0, 
     "gameweek": 8, 
     "matches": [
       {
@@ -1848,6 +1856,7 @@
     ]
   }, 
   {
+    "averagePts": 40.0, 
     "gameweek": 9, 
     "matches": [
       {
@@ -2079,6 +2088,7 @@
     ]
   }, 
   {
+    "averagePts": 40.0, 
     "gameweek": 10, 
     "matches": [
       {
@@ -2310,6 +2320,7 @@
     ]
   }, 
   {
+    "averagePts": 34.0, 
     "gameweek": 11, 
     "matches": [
       {
@@ -2541,6 +2552,7 @@
     ]
   }, 
   {
+    "averagePts": 37.0, 
     "gameweek": 12, 
     "matches": [
       {
@@ -2772,6 +2784,7 @@
     ]
   }, 
   {
+    "averagePts": 41.0, 
     "gameweek": 13, 
     "matches": [
       {
@@ -3003,6 +3016,7 @@
     ]
   }, 
   {
+    "averagePts": 37.0, 
     "gameweek": 14, 
     "matches": [
       {
@@ -3234,6 +3248,7 @@
     ]
   }, 
   {
+    "averagePts": 32.0, 
     "gameweek": 15, 
     "matches": [
       {
@@ -3465,6 +3480,7 @@
     ]
   }, 
   {
+    "averagePts": 40.0, 
     "gameweek": 16, 
     "matches": [
       {
@@ -3696,6 +3712,7 @@
     ]
   }, 
   {
+    "averagePts": 35.0, 
     "gameweek": 17, 
     "matches": [
       {
@@ -3926,4 +3943,290 @@
       }
     ]
   }
-]
+];
+
+
+/* ------------------------------ GRAPH 1 ------------------------------*/
+var gameweekPointsMatrix = [];
+var weeks = [];
+
+for (var i=0;i<9;i++) {
+	gameweekPointsMatrix[i] = [];
+}
+
+
+
+/* ------------------------------ GRAPH 2 ------------------------------*/
+var totalPointsWonBy = [0,0,0,0,0,0,0,0,0];
+var totalWins = [0,0,0,0,0,0,0,0,0];
+
+
+
+/* ------------------------------ GRAPH 3 ------------------------------*/
+var totalPointsLostBy = [0,0,0,0,0,0,0,0,0];
+var totalLosses = [0,0,0,0,0,0,0,0,0];
+
+
+/* ------------------------------ GRAPH 4 ------------------------------*/
+var positionsCount = []
+for (var i=0;i<9;i++) {
+	positionsCount[i] = [0,0,0];
+}
+
+
+/* ------------------------------ GRAPH 5 ------------------------------*/
+var positionsTotal = []
+for (var i=0;i<9;i++) {
+	positionsTotal[i] = [0,0,0];
+}
+
+
+/* ------------------------------ GRAPH 6 ------------------------------*/
+var subsTotal = [0,0,0,0,0,0,0,0,0];
+
+
+/* ------------------------------ GRAPH 7 ------------------------------*/
+var headToHeadMatrix = [];
+for (var i=0;i<9;i++) {
+	headToHeadMatrix.push([]);
+  for (var j=0;j<9;j++) {
+  	headToHeadMatrix[i].push([]);
+  	headToHeadMatrix[i][j].push(0);
+  	headToHeadMatrix[i][j].push(0);
+  	headToHeadMatrix[i][j].push(0);
+  }
+}
+
+
+
+
+for(var i=0; i<data.length; i++){
+
+	var gameweekNumber = data[i]['gameweek'];
+	weeks.push(gameweekNumber);
+
+	for (var j=0; j<data[i]['matches'].length; j++) {
+
+		var team1Points;
+		var team2Points;
+		var team1Name;
+		var team2Name;
+		var playingAvg;
+
+
+		//User is playing the average team
+		if(!data[i]['matches'][j].hasOwnProperty('team2')) {
+			
+			var team1 = data[i]['matches'][j]['team1']['starting'];
+			team1Points = parseInt(team1['keeper']['points']) + parseInt(team1['defenders']['points']) + parseInt(team1['midfielders']['points']) + parseInt(team1['strikers']['points']);
+			team2Points = data[i]['averagePts'];
+			team1Name = data[i]['matches'][j]['team1']['name'].split(",")[1];
+
+			calculatePositionBreakdown(gameweekNumber, team1Name, team1);
+			pushPositionPoints(gameweekNumber, team1Name, team1);
+			pushSubsPoints(gameweekNumber, team1Name, parseInt(data[i]['matches'][j]['team1']['subs']['points']));
+
+
+			playingAvg = true;
+		
+		}
+
+		else {
+			var team1 = data[i]['matches'][j]['team1']['starting'];
+			var team2 = data[i]['matches'][j]['team2']['starting'];
+			team1Points = parseInt(team1['keeper']['points']) + parseInt(team1['defenders']['points']) + parseInt(team1['midfielders']['points']) + parseInt(team1['strikers']['points']);
+			team2Points = parseInt(team2['keeper']['points']) + parseInt(team2['defenders']['points']) + parseInt(team2['midfielders']['points']) + parseInt(team2['strikers']['points']);
+			team1Name = data[i]['matches'][j]['team1']['name'].split(",")[1];
+			team2Name = data[i]['matches'][j]['team2']['name'].split(",")[1];
+
+
+			calculatePositionBreakdown(gameweekNumber, team1Name, team1);
+			calculatePositionBreakdown(gameweekNumber, team2Name, team2);
+			pushPositionPoints(gameweekNumber, team1Name, team1);
+			pushPositionPoints(gameweekNumber, team2Name, team2);
+			pushSubsPoints(gameweekNumber, team2Name, parseInt(data[i]['matches'][j]['team2']['subs']['points']))
+			pushSubsPoints(gameweekNumber, team2Name, parseInt(data[i]['matches'][j]['team2']['subs']['points']))
+
+			playingAvg = false;
+			
+		
+		}
+		
+
+		if(playingAvg) {
+			if(team1Points > team2Points) {
+				pushResult(team1Name, 3, gameweekNumber);
+				pushWinningMargin(team1Name, team1Points-team2Points);
+				
+			}
+			else if (team1Points < team2Points) {
+				pushResult(team1Name, 0, gameweekNumber);
+				pushLosingMargin(team1Name, team2Points-team1Points);
+	
+			}
+			else {
+				pushResult(team1Name, 1, gameweekNumber);
+			}
+		}
+
+		else {
+
+			if(team1Points > team2Points) {
+				pushResult(team1Name, 3, gameweekNumber);
+				pushResult(team2Name, 0, gameweekNumber);
+				pushWinningMargin(team1Name, team1Points-team2Points);
+				pushLosingMargin(team2Name, team1Points-team2Points);
+				pushHeadToHead(team1Name, team2Name, false);
+			}
+			else if (team1Points < team2Points) {
+				pushResult(team1Name, 0, gameweekNumber);
+				pushResult(team2Name, 3, gameweekNumber);
+				pushWinningMargin(team2Name, team2Points-team1Points);
+				pushLosingMargin(team1Name, team2Points-team1Points);
+				pushHeadToHead(team2Name, team1Name, false);
+			}
+			else {
+				pushResult(team1Name, 1, gameweekNumber);
+				pushResult(team2Name, 1, gameweekNumber);
+				pushHeadToHead(team1Name, team2Name, true);
+			}
+		}
+
+	}
+
+}
+
+
+
+
+
+function determinePlayer(name) {
+	switch (name) {
+		case 'Ruairi':
+			return 0;
+		case 'Gavin':
+			return 1;
+		case 'Cillian':
+			return 2;
+		case 'Sean':
+			return 3;
+		case 'Robbie':
+			return 4;
+		case 'Peter':
+			return 5;
+		case 'Eoghan':
+			return 6;
+		case 'Fearghal':
+			return 7;
+		case 'Conall':
+			return 8;		 
+	}
+}
+
+
+function pushResult(name, points, gameweek) {
+	name = name.split(" ")[1];
+	if(gameweek == 1) {
+		gameweekPointsMatrix[determinePlayer(name)][gameweek-1] = points;
+	}
+	else {
+		gameweekPointsMatrix[determinePlayer(name)][gameweek-1] = 
+		gameweekPointsMatrix[determinePlayer(name)][gameweek-2] + points;
+	}	
+}
+
+function pushWinningMargin(name, margin) {
+	name = name.split(" ")[1];
+	nameIndex = determinePlayer(name);
+	totalWins[nameIndex] = totalWins[nameIndex] + 1;
+	totalPointsWonBy[nameIndex] = totalPointsWonBy[nameIndex] + margin;
+}
+
+function pushLosingMargin(name, margin) {
+	name = name.split(" ")[1];
+	nameIndex = determinePlayer(name);
+	totalLosses[nameIndex] = totalLosses[nameIndex] + 1;
+	totalPointsLostBy[nameIndex] = totalPointsLostBy[nameIndex] + margin;
+}
+
+
+function calculatePositionBreakdown(gameweek, name, playerObj) {
+	var name = name.split(" ")[1];
+	var index = determinePlayer(name);
+	positionsCount[index][0] = positionsCount[index][0] + playerObj['defenders']['count'];
+	positionsCount[index][1] = positionsCount[index][1] + playerObj['midfielders']['count'];
+	positionsCount[index][2] = positionsCount[index][2] + playerObj['strikers']['count'];
+	
+}
+
+function pushPositionPoints(gameweek, name, playerObj) {
+	var name = name.split(" ")[1];
+	var index = determinePlayer(name);
+	positionsTotal[index][0] = positionsTotal[index][0] + playerObj['defenders']['points'];
+	positionsTotal[index][1] = positionsTotal[index][1] + playerObj['midfielders']['points'];
+	positionsTotal[index][2] = positionsTotal[index][2] + playerObj['strikers']['points'];
+	
+}
+
+function pushSubsPoints(gameweek, name, points) {
+	var name = name.split(" ")[1];
+	var index = determinePlayer(name);
+	subsTotal[index] = subsTotal[index] + points;	
+}
+
+
+function pushHeadToHead(winnerName, loserName, isDraw) {
+	winnerName = winnerName.split(" ")[1];
+	loserName = loserName.split(" ")[1];
+
+	if(!isDraw) {
+		headToHeadMatrix[determinePlayer(winnerName)][determinePlayer(loserName)][0] =
+		headToHeadMatrix[determinePlayer(winnerName)][determinePlayer(loserName)][0]+1; 
+
+		headToHeadMatrix[determinePlayer(loserName)][determinePlayer(winnerName)][2] =
+		headToHeadMatrix[determinePlayer(loserName)][determinePlayer(winnerName)][2]+1; 
+	}
+
+	else {
+		headToHeadMatrix[determinePlayer(winnerName)][determinePlayer(loserName)][1] =
+		headToHeadMatrix[determinePlayer(winnerName)][determinePlayer(loserName)][1]+1; 
+
+		headToHeadMatrix[determinePlayer(loserName)][determinePlayer(winnerName)][1] =
+		headToHeadMatrix[determinePlayer(loserName)][determinePlayer(winnerName)][1]+1;				
+	}
+
+}
+
+
+
+
+var avgWinMargin = [];
+var avgLoseMargin = [];
+
+/* ------------------------------ GRAPH 4 ------------------------------*/
+for (var i = 0; i < 9; i++) {
+	avgWinMargin[i] = totalPointsWonBy[i]/totalWins[i];
+	avgLoseMargin[i] = totalPointsLostBy[i]/totalLosses[i];
+}
+
+/* ------------------------------ GRAPH 5 ------------------------------*/
+var positionAsPercentage = [[],[],[]];
+
+for (var i = 0; i < 9; i++) {
+	
+	positionAsPercentage[0][i] = positionsTotal[i][0] / (positionsTotal[i][0] + positionsTotal[i][1] + positionsTotal[i][2]);
+	positionAsPercentage[1][i] = positionsTotal[i][1] / (positionsTotal[i][0] + positionsTotal[i][1] + positionsTotal[i][2]);
+	positionAsPercentage[2][i] = positionsTotal[i][2] / (positionsTotal[i][0] + positionsTotal[i][1] + positionsTotal[i][2]);
+
+	
+}
+
+console.log(headToHeadMatrix);
+
+/*
+console.log(gameweekPointsMatrix);
+console.log(avgWinMargin);
+console.log(avgLoseMargin);
+console.log(positionsCount);
+*/
+
