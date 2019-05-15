@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import re
 import json
-
+import time
 
 
 
@@ -27,14 +27,26 @@ for j in range (1, 106):
 
 	for i in range(0, len(lines)):
 
-		#Grab gameweek number
-		if re.search('<li>Gameweek', lines[i]):
-			gameweek = re.search('[0-9]+', lines[i]).group()
-			print 'This is gameweek ' + str(gameweek)
+		gameweekRawLines = []
+
+		#Minified html, all code is on one line, find the line with the good stuff
+		if(len(lines[i]) > 10000):
+			if re.search('div', lines[i][1:10]):
+				gameweekRawLines = re.split('><', lines[i])
+
+				for j in range(1, len(gameweekRawLines)):
+					print gameweekRawLines[j]
+
+				time.sleep(10)
+
 
 		#Grab teamNames
-		if re.search('\W<h2>[0-9 A-Z a-z á é \& ; , \W]+/h2>', lines[i]):
-			teamNames.append(re.findall('[A-Za-z\sáé\&;\']+', lines[i])[2] + ', ' + re.findall('[A-Za-z\sáé\&;\']+', lines[i])[5])
+		lineWithTeamName = re.search('\W<h2>[0-9 A-Z a-z á é \& ; , \W]+/h2>', lines[i])
+		
+		if (lineWithTeamName is not None):
+			playerName = re.findall('>[\w\s]+<', lineWithTeamName.group())
+			teamNames.append(playerName[1][1:-1])
+
 
 		startingDiv = re.search('\s<div class="starting', lines[i])
 
