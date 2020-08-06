@@ -7,7 +7,7 @@ Web scraper for generating statistic dashboard from draftfantasyfootball
 ## Steps
 
 
-1. Run ``generate_curls.sh`` to generate the curl commands that will fetch the json data for each gameweek
+1. Run ``fetchHeadToHead.sh`` to generate and run curl commands that will output all of the match data to ``headtoHead.json`` 
 2. Run ``generate_curls.sh`` to generate the curl commands that will fetch the json data for each gameweek
 fetch head-tohead JSON data. This writes the h2h data to h2h_data.json (including HeadToHeadMatche ID)
 2. Regex pattern search ```"HeadToHeadMatch","_id":"[\w]{17,17}``` in ``h2h_data.json`` to get parse out h2h IDs

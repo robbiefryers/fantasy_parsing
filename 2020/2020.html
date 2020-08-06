@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>LWSP - The Stats</title>
+	<meta charset="utf-8">
+	<meta author="Robbie Fryers">
+	<meta name="viewport" content="width=device-width, initial-scale=1">	
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<link rel="stylesheet" href="../fantasyStyle.css">
+
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+</head>
+
+<body>
+
+	<!-- I SEEN YOU, YOU DIRTY WEE BIN HOKER -->
+
+	<div class="container">
+		<h1>Lads Who Drink Pints 2019/20</h1>
+
+		<div class="graphContainer">
+			<h2> Total Points vs Gameweek</h2>
+			<canvas id="cumPointsChart"></canvas>
+		</div>
+
+		<div class="pieWrapper">
+			<div class="pieContainerLeft">
+				<h2>Average Winning Margin</h2>
+				<canvas id="graphTwoCanvas"></canvas>
+			</div>
+
+			<div class="pieContainerRight">
+				<h2>Average Losing Margin</h2>
+				<canvas id="graphThreeCanvas"></canvas>
+			</div>
+		</div>
+
+
+
+		<div class="graphContainer">
+			<h2>Frequency of positions picked</h2>
+			<canvas id="graphFourCanvas"></canvas>
+		</div>
+
+		<div class="graphContainer">
+			<h2>Percentage of points from position</h2>
+			<canvas id="graphFiveCanvas"></canvas>
+		</div>
+
+		<div class="graphContainer">
+			<h2>Points left on bench</h2>
+			<canvas id="graphSixCanvas"></canvas>
+		</div>
+
+		<div class="graphContainer">
+			Choose a player:
+			<select id="playerSelected" onchange="updateIndivGraph()">
+				<option disabled selected="">Pick someone</option>
+				<option value="Ruairi">Ruairi</option>
+				<option value="Gavin">Gavin</option>
+				<option value="Cillian">Cillian</option>
+				<option value="Sean">Sean</option>
+				<option value="Robbie">Robbie</option>
+				<option value="Peter">Peter</option>
+				<option value="Eoghan">Eoghan</option>
+				<option value="Fearghal">Fearghal</option>
+				<option value="Conall">Conall</option>
+			</select>
+			<h2>You vs. the heap</h2>
+			<canvas id="graphSevenCanvas"></canvas>
+		</div>
+
+	</div>
+	
+</body>
+
+
+
+</html>
