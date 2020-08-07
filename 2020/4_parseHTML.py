@@ -52,7 +52,7 @@ for j in range (1, 191):
 		#Grab important line which has the minified HTML with the game 
 		if re.search('\W<h2>[0-9 A-Z a-z á é \& ; , \W]+/h2>', lines[i]):
 
-		
+			#gamweek cant be grabbed from 2 lines above the main minfified line
 			gameweek = int(re.findall('>Gameweek ([0-9]+)<', lines[i-2])[0])
 
 			print('Processing match ' + str(matches_processed_this_week+1) + ' from gameweek ' + str(gameweek))
